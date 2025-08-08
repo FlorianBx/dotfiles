@@ -1,0 +1,30 @@
+[user]
+	name = Florian Beaumont
+	email = 25250981+BFlorian91@users.noreply.github.com
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[core]
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true  # use n and N to move between diff sections
+	side-by-side = true
+	syntax-theme = Nord
+	minus-style = syntax "#3F2D32"
+	minus-emph-style = syntax "#BF616A"
+	plus-style = syntax "#2D3F32"
+	plus-emph-style = syntax "#A3BE8C"
+	hunk-header-decoration-style = "#4C566A" ul
+	file-decoration-style = "#5E81AC" ul
+
+[merge]
+	tool = nvimdiff
+	conflictStyle = zdiff3
+[mergetool "nvimdiff"]
+	cmd = nvim -d \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c \"wincmd w\" -c \"wincmd J\"
