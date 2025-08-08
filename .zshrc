@@ -1,11 +1,31 @@
+# =============================================================================
+# ZSH Configuration
+# =============================================================================
+
+# Core settings
 export EDITOR="nvim"
 export VISUAL="nvim"
-
-bindkey -v
 export KEYTIMEOUT=1
 
-eval "$(zoxide init zsh)"
+# Enable vi mode
+bindkey -v
 
+# History configuration
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+# =============================================================================
+# Powerlevel10k instant prompt
+# =============================================================================
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -13,11 +33,17 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-if [[ -f "/opt/homebrew/bin/brew" ]] then
+# =============================================================================
+# Homebrew
+# =============================================================================
+if [[ -f "/opt/homebrew/bin/brew" ]]; then
   # If you're using macOS, you'll want this enabled
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+# =============================================================================
+# ZINIT Plugin Manager
+# =============================================================================
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -43,7 +69,8 @@ zinit light Aloxaf/fzf-tab
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
-zinit snippet OMZP::archlinux
+# Only load archlinux plugin if on arch (commented out for macOS)
+# zinit snippet OMZP::archlinux
 zinit snippet OMZP::aws
 zinit snippet OMZP::kubectl
 zinit snippet OMZP::kubectx
@@ -57,37 +84,17 @@ zinit cdreplay -q
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Keybindings
-# bindkey -e
-# bindkey '^p' history-search-backward
-# bindkey '^n' history-search-forward
-# bindkey '^[w' kill-region
-
-# History
-HISTSIZE=5000
-HISTFILE=~/.zsh_history
-SAVEHIST=$HISTSIZE
-HISTDUP=erase
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
-
-# Tmux launch at start
-if [ -z "$TMUX" ]; then
-  tmux new-session
-fi
-
+# =============================================================================
+# Path Exports
+# =============================================================================
 export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
-
-eval $(thefuck --alias)
-
 export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+export PATH="$PATH:/Users/florian/.lmstudio/bin"
 
+# =============================================================================
+# FZF Configuration
+# =============================================================================
 export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_DEFAULT_OPTS='
   --height=100%
@@ -96,32 +103,42 @@ export FZF_DEFAULT_OPTS='
   --preview-window=right:60%
 '
 
-
+# =============================================================================
 # Completion styling
+# =============================================================================
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
+# =============================================================================
+# Keybindings
+# =============================================================================
+bindkey '^[[A' history-beginning-search-backward
+bindkey '^[[B' history-beginning-search-forward
+
+# =============================================================================
 # Aliases
+# =============================================================================
 
 # Navigation aliases
 alias ..='cd ..'
 alias ...='cd ../..'
 alias cdf='cd "$(find . -type d | fzf)"'
 
-# cat
+# Modern replacements
 alias bat='bat --theme=flbx'
-
-# Ls
 alias ls="eza --icons --group-directories-first"
 alias ll="eza --icons --group-directories-first --long"
 alias la="eza --icons --group-directories-first --long --all"
+alias el="eza --icons --group-directories-first --long --tree -L 2"
+alias vim='nvim'
+alias nn='nvim .'
+alias youtube-dl='yt-dlp'
 
 # Television
 alias ff='tv files'
-
 
 # Git aliases
 alias gs='git status -s'
@@ -132,10 +149,15 @@ alias gp='git push'
 alias gl='git pull'
 alias gb='git branch'
 alias suo="--set-upstream origin"
-alias gs="git stash"
+alias gst="git stash"
 alias gsp="git stash pop"
 
-# Zsh / Nvim config
+# Difftastic git commands
+alias gdl="git -c diff.external=difft log -p --ext-diff"
+alias gds="git -c diff.external=difft show --ext-diff"
+alias gft="git -c diff.external=difft diff"
+
+# Configuration shortcuts
 alias rl="source ~/.zshrc && clear"
 alias nc="nvim ~/.config/nvim/"
 alias config="nvim ~/.zshrc"
@@ -154,21 +176,21 @@ alias tp='task purge'
 alias tc='task completed'
 alias th='printf "task add \"Example task\" +tag due:tomorrow | YYYY-MM-DD\n"'
 
+# Utility aliases
 alias ds-clean='find . -name .DS_Store -delete'
-
-# Dom
 alias bt="shortcuts run 'Turn the Desktop Light'"
-
-# Simple static server for HTML/CSS
 alias serv='browser-sync start --server --files "*.html, css/*.css"'
 
-# pnpm/Node commands
+# Package manager shortcuts
 alias p="pnpm"
 alias pu="pnpm add -g pnpm"
 alias prd="pnpm run dev"
 alias prt="pnpm run test"
 
-# Custom python and shell scripts
+# Angular
+alias ngn="ng new --skip-tests --style"
+
+# Custom scripts
 alias gr="python3 ~/bin/gitlab-replica/generate_contributions.py"
 alias delnm="~/bin/recurse-clear-nodemodules.sh"
 alias sn="~/bin/neovim-shortcuts.py"
@@ -177,39 +199,38 @@ alias ffm="~/bin/toMp4.py"
 alias scannet="sudo ~/bin/scan_network.sh"
 alias ng-struct="~/bin/ng-struct.sh"
 
-# Difftastic git commands
-alias gdl="git -c diff.external=difft log -p --ext-diff"
-alias gds="git -c diff.external=difft show --ext-diff"
-alias gft="git -c diff.external=difft diff"
+# =============================================================================
+# Tmux Auto-launch (commented out to prevent loops)
+# =============================================================================
+# Uncomment if you want tmux to auto-launch (be careful of infinite loops)
+# if [ -z "$TMUX" ]; then
+#   tmux new-session
+# fi
 
-alias nn='nvim .'
-alias vim='nvim'
+# =============================================================================
+# Shell integrations (loaded at the end for performance)
+# =============================================================================
+# FZF integration
+if command -v fzf &> /dev/null; then
+  eval "$(fzf --zsh)"
+fi
 
-alias youtube-dl='yt-dlp'
+# Zoxide integration (smart cd with 'z' command)
+if command -v zoxide &> /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
 
-# Angular
-alias ngn="ng new --skip-tests --style"
+# Node version manager
+if command -v fnm &> /dev/null; then
+  eval "$(fnm env)"
+fi
 
-# Shell integrations
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
-eval "$(fnm env)"
+# The Fuck command correction
+if command -v thefuck &> /dev/null; then
+  eval $(thefuck --alias)
+fi
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/florian/.lmstudio/bin"
-# End of LM Studio CLI section
-
-
-bindkey '^[[A' history-beginning-search-backward
-bindkey '^[[B' history-beginning-search-forward
-
-# Load Angular CLI autocompletion.
-source <(ng completion script)
-
-# pnpm
-export PNPM_HOME="/Users/florian/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
+# Angular CLI autocompletion
+if command -v ng &> /dev/null; then
+  source <(ng completion script)
+fi
