@@ -1,5 +1,6 @@
 # dark blue-grey pastel (background, panel/shadows)
-palette = 0=#444c5c
+# palette = 0=#444c5c
+palette = 0=#292d38
 
 # very soft red (errors / git diff removed)
 palette = 1=#f3b6bb
