@@ -92,31 +92,6 @@ export PATH="$PNPM_HOME:$PATH"
 export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 export PATH="$PATH:/Users/florian/.lmstudio/bin"
 
-# =============================================================================
-# FZF Configuration
-# =============================================================================
-export FZF_DEFAULT_COMMAND='fd --type f'
-export FZF_DEFAULT_OPTS='
-  --height=100%
-  --layout=reverse
-  --preview="bat --style=numbers --color=always --line-range=:500 {}"
-  --preview-window=right:60%
-'
-
-# =============================================================================
-# Completion styling
-# =============================================================================
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-
-# =============================================================================
-# Keybindings
-# =============================================================================
-bindkey '^[[A' history-beginning-search-backward
-bindkey '^[[B' history-beginning-search-forward
 
 # =============================================================================
 # Aliases
@@ -129,7 +104,6 @@ alias cdf='cd "$(find . -type d | fzf)"'
 
 # Modern replacements
 alias bat='bat --theme=flbx'
-alias ls="eza --icons --group-directories-first"
 alias ll="eza --icons --group-directories-first --long"
 alias la="eza --icons --group-directories-first --long --all"
 alias el="eza --icons --group-directories-first --long --tree -L 2"
@@ -164,17 +138,6 @@ alias config="nvim ~/.zshrc"
 alias todoc="nvim ~/.taskrc"
 alias c="clear"
 alias y='yazi'
-
-# Taskwarrior
-alias ta='task add'
-alias tl='task list'
-alias tla='task all'
-alias tld='task +PENDING due:today list'
-alias td='task done'
-alias tn='task next'
-alias tp='task purge'
-alias tc='task completed'
-alias th='printf "task add \"Example task\" +tag due:tomorrow | YYYY-MM-DD\n"'
 
 # Utility aliases
 alias ds-clean='find . -name .DS_Store -delete'
@@ -234,3 +197,13 @@ fi
 if command -v ng &> /dev/null; then
   source <(ng completion script)
 fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
+# Configuration fzf-tab
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -la --icons --color=always $realpath'
+zstyle ':fzf-tab:*' fzf-command fzf
+zstyle ':fzf-tab:*' fzf-flags --height=80% --layout=reverse
